@@ -85,10 +85,9 @@ class SMS {
     /**
      * Send SMS message if you set multiple recipient they will all received the message
      * 
-     * @param boolean $report Set true to return reporting
      * @param boolean $bypass
      */
-    public function send(bool $report = false, bool $bypass = false){
+    public function send(bool $bypass = false){
         
         if(!is_array($this->recipient) || (is_array($this->recipient) && count($this->recipient) === 0)) 
             throw new SMSException('Message recipient not set.');
@@ -126,10 +125,7 @@ class SMS {
             }
         }
 
-        if($report){
-            $report = @json_encode($report);
-            echo $report;
-        }
+        return $report;
     }
 
     /**
