@@ -1,5 +1,5 @@
 {
-    "name": "BoredEngineerPH/php-glabs-api",
+    "name": "boredengineerph/php-glabs-api",
     "description": "Yet Another GLabs API PHP Wrapper library",
     "keywords": ["template", "composer", "package"],
     "license": "MIT",
@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "GLabs\\": "src/"
+            "GLab\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GLabs\\Tests\\": "tests/"
+            "GLab\\Tests\\": "tests/"
         }
     }	
 }
