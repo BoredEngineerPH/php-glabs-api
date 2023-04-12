@@ -1,31 +1,19 @@
 <?php namespace GLab;
-
-use GLab\Support\AccessToken;
-
-if(!function_exists('curl_init')) throw new BadFunctionCallException('cURL not enable.');
-if(!defined('APP_ID')) throw new \Exception('APP ID not set.');
-if(!defined('APP_SECRET')) throw new \Exception('APP SECRET not set.');
-if(!defined('SHORT_CODE')) throw new \Exception('SHORT CODE not set.');
-
-
-class LoadException extends \Exception{}
-
 /**
 *  Load API
 *
-* The Load API enables your application to send prepaid load, postpaid credits or call, text and surfing promos to your subscribers.
+*  The Load API enables your application to send prepaid load, postpaid credits or call, text and surfing promos to your subscribers.
 * 
-* Note: The Load API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
+*  Note: The Load API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
 *
 *  @author Juan Caser
 */
-class Load {
 
-    /**
-     * Outbound URI
-     */
-    const OUTBOUND_ENDPOINT_URI = 'https://devapi.globelabs.com.ph/rewards/v1/transactions';
+use GLab\Support\GLab;
 
+class LoadException extends \Exception{}
+
+class Load extends GLab{
     /**
      * Lists of load recipient
      */
@@ -47,7 +35,6 @@ class Load {
         return $this;
     }
 
-
     /**
      * Send Load 
      * 
@@ -58,27 +45,20 @@ class Load {
     public function send(string $rewards_token, string $promo){
         
         if(!is_array($this->recipient) || (is_array($this->recipient) && count($this->recipient) === 0)) 
-            throw new LoadException('Load recipient not set.');
+            throw new LoadException(ApiConstants::RECIPIENT_NOTSET);
         
         $transaction = [];
         
         foreach($this->recipient as $recipient){
-
-            $curl_options = [
-                CURLOPT_URL => self::ENDPOINT_OUTBOUND_URI.'/send',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => "{ \"outboundRewardRequest\" : { \"app_id\" : \"".APP_ID."\", \"app_secret\" : \"".APP_SECRET."\", \"rewards_token\" : \"".$rewards_token."\", \"address\" : \"".$recipient."\", \"promo\" : \"".$promo."\" } }",
-                CURLOPT_HTTPHEADER => [
-                    "Content-Type: application/json",
-                    "Host: devapi.globelabs.com.ph"
-                ],                    
-            ];
-            $response = $this->call($curl_options);
+            $response = $this->post('/rewards/v1/transactions/send', [
+                'outboundRewardRequest' => [
+                    'app_id'        => APP_ID,
+                    'app_secret'    => APP_SECRET,
+                    'rewards_token' => $rewards_token,
+                    'address'       => $recipient,
+                    'promo'         => $promo
+                ]
+            ]);
             $transaction[$recipient] = $response;
         }
         return $transaction;
@@ -92,39 +72,13 @@ class Load {
      * @return array
      */
     public function status(string $transaction_id, string $rewards_token){
-        return $this->call([
-            CURLOPT_URL => self::ENDPOINT_OUTBOUND_URI.'/status',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "{ \"rewardStatusRequest\" : { \"app_id\" : \"".APP_ID."\", \"app_secret\" : \"".APP_SECRET."\", \"rewards_token\" : \"".$rewards_token."\", \"transaction_id\" : \"".$transaction_id."\" } }",
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json"
-            ],                    
+        return $this->post('/rewards/v1/transactions/status', [
+            'rewardStatusRequest' => [
+                'app_id'        => APP_ID, 
+                'app_secret'    => APP_SECRET, 
+                'rewards_token' => $rewards_token, 
+                'transaction_id'=> $transaction_id
+            ] 
         ]);
-    }
-
-    /**
-     * Call API via cURL
-     * 
-     * @param array $curl_options
-     * @return array
-     */
-    private function call(array $curl_options){
-        $ch = curl_init();
-        curl_setopt_array($ch, $curl_options);
-
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        if ($err) {
-            return ['status' => 'error', 'message' => $err];
-        } else {
-            return ['status' => 'ok', 'message' => $response];
-        }
     }
 }
