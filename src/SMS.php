@@ -23,9 +23,11 @@ class SMSException extends \Exception{}
 class SMS {
 
     /**
-     * URI for sending SMS
+     * URI for outbound messaging
      */
-    const ENDPOINT_URI = 'https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{code}/requests?access_token={access_token}';
+    const OUTBOUND_ENDPOINT_URI = 'https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{code}/requests';
+
+    //"https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/".$shortcode."/requests?app_id=".$app_id."&app_secret=".$app_secret."&passphrase=".$passphrase
 
     /**
      * Max character limit in sending SMS message
@@ -84,26 +86,30 @@ class SMS {
      * Send SMS message if you set multiple recipient they will all received the message
      * 
      * @param boolean $report Set true to return reporting
+     * @param boolean $bypass
      */
-    public function send(bool $report = false){
+    public function send(bool $report = false, bool $bypass = false){
         
-        // Get access token
-        $access_token = AccessToken::get();
-
         if(!is_array($this->recipient) || (is_array($this->recipient) && count($this->recipient) === 0)) 
             throw new SMSException('Message recipient not set.');
         
         $report = [];
 
-        $uri = str_replace('{code}', SHORT_CODE, self::ENDPOINT_URI);
-        $uri = str_replace('{access_token}', $access_token, $uri);
-
+        $uri = str_replace('{code}', SHORT_CODE, self::ENDPOINT_OUTBOUND_URI);
+        if($bypass){
+            if(!defined('PASS_PHRASE')) throw new SMSException('Pass Phrase not set.');
+            $uri = '?app_id='.APP_ID.'&app_secret='.APP_SECRET.'&passphrase='.PASS_PHRASE;
+        }else{
+            $access_token = AccessToken::get(); // Get access token
+            $uri = '?access_token='.$access_token;
+        }
+        
         foreach($this->recipient as $recipient){
             // Loop all message if its split it will take to sending
             foreach($this->message as $message){
                 $clientCorrelator = date('hisjmy'); // ID is based from from time and date                    
-                $ch = curl_init();
-                curl_setopt_array($ch, [
+
+                $curl_options = [
                     CURLOPT_URL => $uri,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
@@ -111,27 +117,39 @@ class SMS {
                     CURLOPT_TIMEOUT => 30,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS => "{\"outboundSMSMessageRequest\": { \"clientCorrelator\": \"".$clientCorrelator."\", \"senderAddress\": \"".$SHORT_CODE."\", \"outboundSMSTextMessage\": {\"message\": \"".$message."\"}, \"address\": \"".$recipient."\" } }",
+                    CURLOPT_POSTFIELDS => "{\"outboundSMSMessageRequest\": { \"clientCorrelator\": \"".$clientCorrelator."\", \"senderAddress\": \"".SHORT_CODE."\", \"outboundSMSTextMessage\": {\"message\": \"".$message."\"}, \"address\": \"".$recipient."\" } }",
                     CURLOPT_HTTPHEADER => [
                         "Content-Type: application/json"                        
                     ],                    
-                ]);
-                
-                $response = curl_exec($ch);
-                $err = curl_error($ch);
-                curl_close($ch);
-
-                if ($err) {
-                    $report[$recipient][$clientCorrelator]['error'] = $err;
-                } else {
-                    $report[$recipient][$clientCorrelator]['ok'] = $response;
-                }                 
+                ];
+                $report[$recipient][$clientCorrelator] = $this->call($curl_options);
             }
         }
 
         if($report){
             $report = @json_encode($report);
             echo $report;
+        }
+    }
+
+    /**
+     * Call API via cURL
+     * 
+     * @param array $curl_options
+     * @return array
+     */
+    private function call(array $curl_options){
+        $ch = curl_init();
+        curl_setopt_array($ch, $curl_options);
+
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            return ['status' => 'error', 'message' => $err];
+        } else {
+            return ['status' => 'ok', 'message' => $response];
         }
     }
 }
