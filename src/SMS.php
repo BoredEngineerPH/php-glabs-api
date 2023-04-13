@@ -19,10 +19,11 @@ class SMSException extends \Exception{}
 class SMS extends GLab{
     
     const ERROR_NO_ADDRESS_SET = 'Recipient address not set.';
+    const ERROR_MESSAGE_SET = 'No message set.';
 
 
     private $address = []; // Number of the recipient
-    private $message = []; // Message to the recipient
+    private $message = ''; // Message to the recipient
 
     /**
      * Address or mobile number of the recipient
@@ -47,11 +48,7 @@ class SMS extends GLab{
      * @return object $this self
      */
     public function message(string $message){
-        if(strlen($message) <= parent::SMS_CHAR_LIMIT){
-            $this->message = str_split($message, parent::SMS_CHAR_LIMIT);
-        }else{
-            $this->message[] = $message;
-        }
+        $this->message = $message;
         return $this;
     }
 
@@ -81,6 +78,7 @@ class SMS extends GLab{
     public function send(string $pass_phrase = null){
         
         if(is_array($this->address) && count($this->address) === 0) throw new SMSException(self::ERROR_NO_ADDRESS_SET);
+        if(!empty($message))  throw new SMSException(self::ERROR_MESSAGE_SET);
 
         if(!is_null($pass_phrase)){
             $query_str = '?app_id='.$this->APP_ID.'&app_secret='.$this->APP_SECRET.'&passphrase='.$pass_phrase;
@@ -90,22 +88,18 @@ class SMS extends GLab{
         
         $reporting = [];
         foreach($this->address as $address){
-            $i = 1;
-            foreach($this->message as $message){
-                $clientCorrelator = md5($address.'@'.$i);
-                $payload = [
-                    'outboundSMSMessageRequest' => [
-                        'clientCorrelator' => $clientCorrelator,
-                        'senderAddress' => $this->SHORTCODE,
-                        'outboundSMSTextMessage' => [
-                            'message' => $message,
-                        ],
-                        'address' => $address
-                    ]
-                ];
-                $reporting[$address][$clientCorrelator] = $this->post('/smsmessaging/v1/outbound/'. $this->SHORTCODE.'/requests'.$query_str, $payload);
-                $i++;
-            }
+            $clientCorrelator = md5($address);
+            $payload = [
+                'outboundSMSMessageRequest' => [
+                    'clientCorrelator' => $clientCorrelator,
+                    'senderAddress' => $this->SHORTCODE,
+                    'outboundSMSTextMessage' => [
+                        'message' => $message,
+                    ],
+                    'address' => $address
+                ]
+            ];
+            $reporting[$address][$clientCorrelator] = $this->post('/smsmessaging/v1/outbound/'. $this->SHORTCODE.'/requests'.$query_str, $payload);
         }
         return $reporting;
     }

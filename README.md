@@ -18,16 +18,13 @@ Short Message Service (SMS) enables your application or service to send and rece
 
 Note: All API calls must include the access_token as one of the Universal Resource Identifier (URI) parameters.
 
-See [](https://www.globelabs.com.ph/docs/#sms)
+See [https://www.globelabs.com.ph/docs/#sms](https://www.globelabs.com.ph/docs/#sms)
 
 ### Sending SMS (MT) `POST`
 
 > (Mobile Terminating - Application to Subscriber)
 
 #### Resource Parameters 
-
-    https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{senderAddress}/requests?access_token={access_token}
-
 
 | Parameter     | Description                                                                                                                                                        | Type   | Usage    |
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
@@ -50,12 +47,12 @@ $payload = [
 		'outboundSMSTextMessage' => [
 			'message' => 'Hello World',
 		],
-		'address' => '09161234567'
+		'address' => '0916xxxxxxx'
 	]
 ];
 ```
 
-#### How to use
+#### Usage `SMS.php`
 ```php
 try {
     $sms = new GLab\SMS();
@@ -74,8 +71,17 @@ try {
     $sms->send();
 } catch(GLab\SMSException $e) {
     echo 'SMS: ' .$e->getMessage();
+} catch(GLab\HttpException $e) {
+    echo 'Http: ' .$e->getMessage();
+} catch(GLab\TokenException $e) {
+    echo 'Access Token: ' .$e->getMessage();
 }
 ```
+| Method | URI                                                                                                                                     |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `POST` | `https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}` |
+
+See [https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt](https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt)
 
 ## Location Based Services (LBS)
 
@@ -85,21 +91,47 @@ Note: All API calls must include the access_token as one of the Universal Resour
 
 Read more about the Subscriber Consent Workflow (http://goo.gl/EEEBO8)
 
-See [](https://www.globelabs.com.ph/docs/#location-based-services)
+See [https://www.globelabs.com.ph/docs/#location-based-services](https://www.globelabs.com.ph/docs/#location-based-services)
+
+#### Resource Parameters 
+```
+https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}
+
+```
+| Parameter                            | Description                                                                                                                                                                                                                           | Type     | Usage    |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
+|        `access_token`                |        Contains security information for transacting with a subscriber.This can be   requested beforehand via the [Subscriber Consent Workflow](http://goo.gl/EEEBO8).              | `STRING` | Required |
+|                  `address`           | Subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code +639xxxxxxxxx   or 09xxxxxxxxx                                                                    | `INT`    | Required |
+|                  `requestedAccuracy` | The preferred accuracy of the result, in metres. Typically, when you   request an accurate location it will take longer to retrieve than a coarse   location. So requestedAccuracy=10 will take longer than requestedAccuracy=100   .	 | `INT`    | Required |
+
+#### Usage `LBS.php`
+
+```php
+try {
+    $lbs = new GLab\LBS();    
+    $lbs->locate('0916xxxxxxx', 100);
+} catch(GLab\HttpException $e) {
+    echo 'Http: ' .$e->getMessage();
+} catch(GLab\TokenException $e) {
+    echo 'Http: ' .$e->getMessage();
+}
+```
+
+See [https://www.globelabs.com.ph/docs/#location-based-services-lbs-query](https://www.globelabs.com.ph/docs/#location-based-services-lbs-query)
 
 ## Charging
 The Charging API allows developers to directly charge for digital services to the prepaid balance of a Globe or TM subscriber.
 
 Note: The Charging API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
 
-See [](https://www.globelabs.com.ph/docs/#charging)
+See [https://www.globelabs.com.ph/docs/#charging](https://www.globelabs.com.ph/docs/#charging)
 
 ## Load
 The Load API enables your application to send prepaid load, postpaid credits or call, text and surfing promos to your subscribers.
 
 Note: The Load API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
 
-See [](https://www.globelabs.com.ph/docs/#load)
+See [https://www.globelabs.com.ph/docs/#load](https://www.globelabs.com.ph/docs/#load)
 
 ## USSD
 
@@ -107,7 +139,7 @@ The USSD API allows users to access your products or services free of charge by 
 
 Note: The USSD API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
 
-See [](https://www.globelabs.com.ph/docs/#ussd)
+See [https://www.globelabs.com.ph/docs/#ussd](https://www.globelabs.com.ph/docs/#ussd)
 
 ## Realtime Wallet
 Wallet Balance API allows developers to retrieve their real-time wallet balance via API so they can monitor their balance.

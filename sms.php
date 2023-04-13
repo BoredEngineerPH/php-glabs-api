@@ -19,4 +19,8 @@ try {
     $sms->send();
 } catch(GLab\SMSException $e) {
     echo 'SMS: ' .$e->getMessage();
+} catch(GLab\HttpException $e) {
+    echo 'Http: ' .$e->getMessage();
+} catch(GLab\TokenException $e) {
+    echo 'Http: ' .$e->getMessage();
 }
