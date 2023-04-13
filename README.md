@@ -6,7 +6,7 @@ Globe labs API library
 | API                             | Model           | Release | Status  |
 |---------------------------------|----------------|---------|---------|
 | Short   Messaging Service (SMS) | `SMS.php`      | `1.0.1` | Added   |
-| Location   Based Service (LBS)  | `LBS.php`      | `1.0.1` | Ongoing |
+| Location   Based Service (LBS)  | `LBS.php`      | `1.0.1` | Done |
 | Charging                        | `Charging.php` | `1.0.1` | Ongoing |
 | Load                            | `Load.php`     | `1.0.1` | Added   |
 | USSD                            | `USDD.php`     | `1.0.1` | Ongoing |
@@ -54,7 +54,7 @@ $payload = [
 |--------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | `POST` | `https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}` |
 
-#### Usage `SMS.php`
+#### Usage
 ```php
 try {
     $sms = new GLab\SMS();
@@ -103,7 +103,10 @@ https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={acces
 |                  `address`           | Subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code +639xxxxxxxxx   or 09xxxxxxxxx                                                                    | `INT`    | Required |
 |                  `requestedAccuracy` | The preferred accuracy of the result, in metres. Typically, when you   request an accurate location it will take longer to retrieve than a coarse   location. So requestedAccuracy=10 will take longer than requestedAccuracy=100   .	 | `INT`    | Required |
 
-#### Usage `LBS.php`
+| Method | URI                                                                                                                                       |
+|--------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `GET`  | `https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={accuracy}` |
+#### Usage
 
 ```php
 try {
