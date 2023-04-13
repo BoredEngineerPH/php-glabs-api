@@ -30,25 +30,74 @@ abstract class GLab {
     const TOKEN_INVALID_REQUEST = 'Invalid access token request.';
     const TOKEN_INVALID_RESPONSE = 'We have encountered an error while requesting your access token.';
     
-    const SMS_CHAR_LIMIT = 160;
+    
+    const SMS_CHAR_LIMIT = 160; // API implemented maximum char limit to SMS message
+
+    /**
+     * API Credentials
+     */
+    public $APP_ID; // Application ID
+    public $APP_SECRET; // Application Secret
+    public $SHORTCODE; // Sender Address
+
+    // +----------------------------------------------------------------------------------------------------+
+    // Configuration setter 
+    // +----------------------------------------------------------------------------------------------------+
+    /**
+     * Set application id
+     * 
+     * @uses $app_id
+     * @param string $app_id 32 character hash string generated when you create you app via Globe Labs developer dashboard.
+     * @return object $this
+     */
+    public function set_app_id(string $app_id){
+        $this->APP_ID = trim($app_id);
+        return $this;
+    }
+
+    /**
+     * Set application id
+     * 
+     * @uses $app_secret
+     * @param string $app_secret 64 character hash string generated when you create you app via Globe Labs developer dashboard.
+     * @return object $this
+     */    
+    public function set_app_secret(string $app_secret){
+        $this->APP_SECRET = trim($app_secret);
+        return $this;
+    }
+    
+    /**
+     * Set sender address a/k/a shortcode
+     * 
+     * @uses $shortcode
+     * @param string $shortcode 8 digit number generated when you create you app via Globe Labs developer dashboard.
+     * @return object $this
+     */    
+    public function set_shortcode(string $shortcode){
+        $this->SHORTCODE = trim($shortcode);
+        return $this;
+    }
 
     /**
      * Get access token via OAuth 2.0
+     * @param string $access_token
+     * @param string Return access token
      */
-    public function getAccessToken(){        
-        if(defined('ACCESS_TOKEN')) $_SESSION['__GLAB_ACT'] = ACCESS_TOKEN;
+    public function getAccessToken(string $access_token = null){        
         if(isset($_SESSION['__GLAB_ACT'])) return $_SESSION['__GLAB_ACT'];
+        if(!is_null($access_token)) $_SESSION['__GLAB_ACT'] = $access_token;
 
         $uri = 'https://developer.globelabs.com.ph/oauth/access_token?app_id={app_id}&app_secret={app_secret}&code={code}';
-        $uri = str_replace('{app_id}', APP_ID, $uri);
-        $uri = str_replace('{app_secret}', APP_SECRET, $uri);
-        $uri = str_replace('{code}', SHORT_CODE, $uri);
+        $uri = str_replace('{app_id}', $this->APP_ID, $uri);
+        $uri = str_replace('{app_secret}', $this->APP_SECRET, $uri);
+        $uri = str_replace('{code}', $this->SHORTCODE, $uri);
             
         $ch = curl_init();    
         curl_setopt_array($ch, [
-            CURLOPT_URL => $uri,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true
+            CURLOPT_URL             => $uri,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_POST            => true
         ]);
         $response = curl_exec($ch);
         $err = curl_error($ch);
@@ -61,6 +110,7 @@ abstract class GLab {
             if(json_last_error() == JSON_ERROR_NONE){
                 if(isset($response->access_token)){
                     $_SESSION['__GLAB_ACT'] = $response->access_token;
+                    return $_SESSION['__GLAB_ACT'];
                 }else{
                     if(isset($response->error)){
                         throw new TokenException($response->error);    
