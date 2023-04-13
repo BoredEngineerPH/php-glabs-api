@@ -11,19 +11,49 @@
 */
 use GLab\Support\GLab;
 
+/**
+ * SMS model exception
+ */
 class SMSException extends \Exception{}
 
 class SMS extends GLab{
-    /**
-     * Lists of SMS recipient
-     */
-    private $recipient = [];
+    
+    const ERROR_NO_ADDRESS_SET = 'Recipient address not set.';
+
+
+    private $address = []; // Number of the recipient
+    private $message = []; // Message to the recipient
 
     /**
-     * SMS message we need to send
+     * Address or mobile number of the recipient
+     * 
+     * @param string/array $address Mobile number of the recipient, you can either pass multiple or single number on this function.
+     * @return object $this self
      */
-    private $message = '';
+    public function address($address){
+        if(is_array($address)){
+            $this->address = array_merge($this->address, $address);
+        }elseif(is_string($address)){
+            $this->address[] = $address;
+        }
+        $this->address = array_unique($this->address);
+        return $this
+    }
 
+    /**
+     * Message to the recipoent
+     * 
+     * @param string $message Should be UTF-8 encoded, the API implementation limits a maximum of 160 characters anything beyond it will split the message into mutiple parts.
+     * @return object $this self
+     */
+    public function message(string $message){
+        if(strlen($message) <= parent::SMS_CHAR_LIMIT){
+            $this->message = str_split($message, parent::SMS_CHAR_LIMIT);
+        }else{
+            $this->message[] = $message;
+        }
+        return $this;
+    }
 
     /**
      * Set SMS recipient user
@@ -41,63 +71,42 @@ class SMS extends GLab{
         return $this;
     }
 
-    /**
-     * Set SMS message
-     * 
-     * @param string $message You plain text sms message.
-     * @param boolean $split Set to TRUE to forced send on multiple batch, if FALSE it will return FALSE if char limit had exceeded.
-     * @return boolean If $truncate is set to TRUE it will always return TRUE, otherwise it will check and return FALSE if char limit had exceeded.
-     */
-    public function message(string $message, bool $split = false){
-        if($split){
-            $this->message = str_split($message, parent::SMS_CHAR_LIMIT);
-            return $this;
-        }else{
-            if(strlen($message) <= parent::SMS_CHAR_LIMIT){
-                $this->message[] = $message;
-                return $this;
-            }else{
-                throw new SMSException(parent::SMS_MAXCHARLIMIT);
-            }
-        }
-    }
 
     /**
      * Send SMS message if you set multiple recipient they will all received the message
      * 
-     * @param boolean $bypass
+     * @param string $pass_phrase Passing this will trigger bypass sending of SMS
+     * @return array Report
      */
-    public function send(bool $bypass = false){
+    public function send(string $pass_phrase = null){
         
-        if(!is_array($this->recipient) || (is_array($this->recipient) && count($this->recipient) === 0)) 
-            throw new SMSException(parent::RECIPIENT_NOTSET);
-        
-        $report = [];
+        if(is_array($this->address) && count($this->address) === 0) throw new SMSException(self::ERROR_NO_ADDRESS_SET);
 
-        if($bypass){
-            if(!defined('PASS_PHRASE')) throw new SMSException(parent::SMS_PASSPHRASE_NOTSET);
-            $query_str = '?app_id='.APP_ID.'&app_secret='.APP_SECRET.'&passphrase='.PASS_PHRASE;
+        if(!is_null($pass_phrase)){
+            $query_str = '?app_id='.$this->APP_ID.'&app_secret='.$this->APP_SECRET.'&passphrase='.$pass_phrase;
         }else{
-            $access_token = $this->getAccessToken(); // Get access token
-            $query_str = '?access_token='.$access_token;
+            $query_str = '?access_token='.$this->getAccessToken();
         }
         
-        foreach($this->recipient as $recipient){
-            // Loop all message if its split it will take to sending
+        $reporting = [];
+        foreach($this->address as $address){
+            $i = 1;
             foreach($this->message as $message){
-                $clientCorrelator = date('hisjmy'); // ID is based from from time and date                    
-                $report[$recipient][$clientCorrelator] = $this->post('/smsmessaging/v1/outbound/'.SHORT_CODE.'/requests'.$query_str, [
+                $clientCorrelator = md5($address.'@'.$i);
+                $payload = [
                     'outboundSMSMessageRequest' => [
-                        'clientCorrelator'  => $clientCorrelator,
-                        'senderAddress'     => SHORT_CODE
+                        'clientCorrelator' => $clientCorrelator
+                        'senderAddress' => $this->SHORTCODE,
                         'outboundSMSTextMessage' => [
-                            'message'       => $message
+                            'message' => $message,
                         ],
-                        'address'           => $recipient                     
+                        'address' => $address
                     ]
-                ]);
+                ];
+                $reporting[$address][$clientCorrelator] = $this->post('/smsmessaging/v1/outbound/'. $this->SHORTCODE.'/requests'.$query_str, $payload);
+                $i++;
             }
         }
-        return $report;
+        return $reporting;
     }
 }
