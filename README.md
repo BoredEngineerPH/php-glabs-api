@@ -19,7 +19,7 @@ Note: All API calls must include the access_token as one of the Universal Resour
 
 See [https://www.globelabs.com.ph/docs/#sms](https://www.globelabs.com.ph/docs/#sms)
 
-### Sending SMS (MT) `POST`
+### Sending SMS (MT)
 
 > (Mobile Terminating - Application to Subscriber)
 
@@ -86,6 +86,7 @@ try {
 | `201`         | Request has been   successful                                                                        |
 | `400`   `401` | Request failed. Wrong   or missing parameters, invalid subscriber_number format, wrong access_token. |
 | `502`   `503` | Platform Error. API   Service is busy or down                                                        |
+
 **Note:** API requests with a response code of `201`, `400` or `401` will be chargeable against your developer wallet. Standard SMS API rates apply, unless otherwise stated.
 
 
