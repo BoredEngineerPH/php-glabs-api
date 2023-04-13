@@ -31,17 +31,29 @@ See [](https://www.globelabs.com.ph/docs/#sms)
 
 | Parameter     | Description                                                                                                                                                        | Type   | Usage    |
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
-| `senderAddress` | refers to the application short code suffix (last 4 digits) a.k.a `SHORT CODE`	                                                                                                        | `STRING` | Required |
-| `access_token`  | which contains security information for transacting with a subscriber.   Subscriber needs to grant an app first via SMS or Web Form Subscriber Consent   Workflow.	 | `STRING` | Required |
+| `senderAddress` | Refers to the application short code suffix (last 4 digits) a.k.a `SHORT CODE`	                                                                                                        | `STRING` | Required |
+| `access_token`  | Contains security information for transacting with a subscriber.   Subscriber needs to grant an app first via SMS or Web Form Subscriber Consent   Workflow.	 | `STRING` | Required |
 
 
 #### Request Body or Payload Parameters
 | Parameter          | Description                                                                                                                                                                                                                                  | Type     | Usage    |
 |--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
-|        `address`   |        is the subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code +639xxxxxxxxx   or 09xxxxxxxxx	                                                             | `STRING` | Required |
-| `message`          | must be provided within the outboundSMSTextMessage element. Currently,   the API implementation is limited a maximum of 160 characters. Also make sure   that your language or framework’s editor is encoding the HTTP parameters as   UTF-8	 | `STRING` | Required |
-| `cloentCorrelator` | uniquely identifies this create SMS request. If there is a communication   failure during the request, using the same clientCorrelator when retrying the   request allows the operator to avoid sending the same SMS twice.	                  | `STRING` | Optional |
+|        `address`   |        Subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code +639xxxxxxxxx   or 09xxxxxxxxx	                                                             | `STRING` | Required |
+| `message`          | Must be provided within the outboundSMSTextMessage element. Currently,   the API implementation is limited a maximum of 160 characters. Also make sure   that your language or framework’s editor is encoding the HTTP parameters as   UTF-8	 | `STRING` | Required |
+| `cloentCorrelator` | Unique identifier when doing SMS request. If there is a communication   failure during the request, using the same clientCorrelator when retrying the   request allows the operator to avoid sending the same SMS twice.	                  | `STRING` | Optional |
 
+```php
+$payload = [
+	'outboundSMSMessageRequest' => [
+		'clientCorrelator' => '123456',
+		'senderAddress' => '1234',
+		'outboundSMSTextMessage' => [
+			'message' => 'Hello World',
+		],
+		'address' => '09161234567'
+	]
+];
+```
 
 #### How to use
 ```php

@@ -95,7 +95,7 @@ class SMS extends GLab{
                 $clientCorrelator = md5($address.'@'.$i);
                 $payload = [
                     'outboundSMSMessageRequest' => [
-                        'clientCorrelator' => $clientCorrelator
+                        'clientCorrelator' => $clientCorrelator,
                         'senderAddress' => $this->SHORTCODE,
                         'outboundSMSTextMessage' => [
                             'message' => $message,
