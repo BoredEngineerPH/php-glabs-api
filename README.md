@@ -80,7 +80,7 @@ try {
 }
 ```
 
-### API Response
+#### API Response
 ```json
 {
  "outboundSMSMessageRequest": {
@@ -102,6 +102,18 @@ try {
  }
 }
 ```
+|        Parameter             | Description                                                                                      |
+|------------------------------|--------------------------------------------------------------------------------------------------|
+|        `outboundSMSResponse` |             Specifies the body of the response.                                                  |
+|        `address`             |             Subscriber MSISDN (mobile number) whom the SMS was sent to.                          |
+| `senderAddress`              | Refers to the application short code suffix (last 4 digits).                                     |
+| `outboundSMSTextMessage`     | The string message sent to the subscriber’s number (address).                                    |
+| `resourceURL`                | Specifies the URI that provides network delivery status of the sent   message. The API Endpoint. |
+| `notifyURL`                  | App call back URL defined at the App Info.                                                       |
+
+**Note:** Response parameters `deliveryInfo`, `callbackData`, `senderName` are optional parameters that are not currently supported by the Globe Labs SMS API. Error response with 400 series will deduct 0.50 from your wallet balance.
+
+
 
 #### HTTP Code
 
@@ -148,7 +160,7 @@ try {
     echo 'Http: ' .$e->getMessage();
 }
 ```
-### API Response
+#### API Response
 ```json
 {
   "terminalLocationList": {
@@ -166,6 +178,17 @@ try {
   }
 }
 ```
+|        Parameter              | Description                                                             |
+|-------------------------------|-------------------------------------------------------------------------|
+|        `terminalLocationList` |             Specifies the body of the response.                         |
+|        `address`              |             Subscriber MSISDN (mobile number) whom the SMS was sent to. |
+| `accuracy`                    | The preferred accuracy of the result, in metres.                        |
+| `outboundSMSTextMessage`      | The string message sent to the subscriber’s number (address).           |
+| `latitude`                    | geographic coordinate of the subscriber that specifies the north-south. |
+| `longitude`                   | geographic coordinate of the subscriber that specifies the north-south. |
+| `timestamp`                   | time of event response.                                                 |
+| `locationRetrievalStatus`     | status of location request.                                             |
+
 #### HTTP Code
 | Code          | Description                                    |
 |---------------|------------------------------------------------|

@@ -20,14 +20,13 @@ class LBS  extends GLab{
      * @param boolean $bypass
      */
     public function locate(string $address, int $accuracy = 100){
-        try {
-            $access_token = $this->getAccessToken();
-            return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy)
-        } catch(GLab\HttpException $e) {
-            echo 'Http: ' .$e->getMessage();
-        } catch(GLab\TokenException $e) {
-            echo 'Access Token: ' .$e->getMessage();
-        }
-
+        $access_token = $this->getAccessToken();
+        return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy, function($http_code, $http_response, $http_error) use($reporting){
+            if($http_code == 201){
+                $reporting[$address][$clientCorrelator] = $http_response;
+            }elseif(in_array($http_code, [400, 401])){
+                throw new SMSException('Request failed. Wrong or missing parameters, invalid subscriber_number format, wrong access_token.');
+            }            
+        })
     }
 }
