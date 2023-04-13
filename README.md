@@ -79,7 +79,31 @@ try {
     echo 'Access Token: ' .$e->getMessage();
 }
 ```
-### HTTP Response
+
+### API Response
+```json
+{
+ "outboundSMSMessageRequest": {
+   "address": "tel:+639175595283",
+   "deliveryInfoList": {
+     "deliveryInfo": [],
+     "resourceURL": "https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/8011/requests?access_token=3YM8xurK_IPdhvX4OUWXQljcHTIPgQDdTESLXDIes4g"
+   },
+   "senderAddress": "8011",
+   "outboundSMSTextMessage": {
+     "message": "Hello World"
+   },
+   "receiptRequest": {
+     "notifyURL": "http://test-sms1.herokuapp.com/callback",
+     "callbackData": null,
+     "senderName": null,
+     "resourceURL": "https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/8011/requests?access_token=3YM8xurK_IPdhvX4OUWXQljcHTIPgQDdTESLXDIes4g"
+   }
+ }
+}
+```
+
+#### HTTP Code
 
 | Code          | Description                                                                                          |
 |---------------|------------------------------------------------------------------------------------------------------|
@@ -124,7 +148,25 @@ try {
     echo 'Http: ' .$e->getMessage();
 }
 ```
-#### HTTP Response
+### API Response
+```json
+{
+  "terminalLocationList": {
+    "terminalLocation": {
+      "address": "tel:9171234567",
+      "currentLocation": {
+        "accuracy": 100,
+        "latitude": "14.5609722",
+        "longitude": "121.0193394",
+        "map_url": "http://maps.google.com/maps?z=17&t=m&q=loc:14.5609722+121.0193394",
+        "timestamp": "Fri Jun 06 2014 09:25:15 GMT+0000 (UTC)"
+      },
+      "locationRetrievalStatus": "Retrieved"
+    }
+  }
+}
+```
+#### HTTP Code
 | Code          | Description                                    |
 |---------------|------------------------------------------------|
 | `201`         | Request has been   successful                  |
