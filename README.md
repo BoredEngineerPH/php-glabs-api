@@ -84,8 +84,8 @@ try {
 | Code          | Description                                                                                          |
 |---------------|------------------------------------------------------------------------------------------------------|
 | `201`         | Request has been   successful                                                                        |
-| `400`   `401` | Request failed. Wrong   or missing parameters, invalid subscriber_number format, wrong access_token. |
-| `502`   `503` | Platform Error. API   Service is busy or down                                                        |
+| `400``401` | Request failed. Wrong   or missing parameters, invalid subscriber_number format, wrong access_token. |
+| `502``503` | Platform Error. API   Service is busy or down                                                        |
 
 **Note:** API requests with a response code of `201`, `400` or `401` will be chargeable against your developer wallet. Standard SMS API rates apply, unless otherwise stated.
 
@@ -128,8 +128,8 @@ try {
 | Code          | Description                                    |
 |---------------|------------------------------------------------|
 | `201`         | Request has been   successful                  |
-| `400`   `401` | Request failed. Wrong   or missing parameters. |
-| `502`   `503` | Platform Error. API   Service is busy or down  |
+| `400``401` | Request failed. Wrong   or missing parameters. |
+| `502``503` | Platform Error. API   Service is busy or down  |
 
 See [https://www.globelabs.com.ph/docs/#location-based-services-lbs-query](https://www.globelabs.com.ph/docs/#location-based-services-lbs-query)
 
