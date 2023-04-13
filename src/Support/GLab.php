@@ -137,17 +137,19 @@ abstract class GLab {
      * 
      * @param string $uri
      * @param array $post_fields
+     * @param callable $response
      */
-    public function post(string $uri, array $post_fields = null){
-        return $this->call('POST', $uri, $post_fields);
+    public function post(string $uri, array $post_fields = null, callable $response){
+        $this->call('POST', $uri, $post_fields, $response);
     }
     /**
      * Call GET via CURL
      * 
      * @param string $uri
+     * @param callable $response
      */
-    public function get(string $uri){
-        return $this->call('GET', $uri);
+    public function get(string $uri, callable $response){
+        $this->call('GET', $uri, $response);
     }
 
     /**
@@ -157,7 +159,7 @@ abstract class GLab {
      * @param string $uri
      * @param array $fields
      */
-    private function call(string $method = 'POST', string $uri, array $fields = null){
+    private function call(string $method = 'POST', string $uri, array $fields = null, callable $response){
         $method = strtoupper($method);
         $ch = curl_init();
         $curl_options = [
@@ -172,20 +174,17 @@ abstract class GLab {
         ];
         if(!is_null($fields)) curl_setopt(CURLOPT_POSTFIELDS, json_encode($post_fields));
         curl_setopt_array($ch, $curl_options);
-        $response = curl_exec($ch);
+        $http_response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err = curl_error($ch);
-        curl_close($curl);
+        $http_error = curl_error($ch);
+        curl_close($ch);
         
-        if($http_code == 500) throw new HttpException('Internal Server Error');
-        if($http_code == 502) throw new HttpException('Bad Gateway');
-        if($http_code == 503) throw new HttpException('Service Unavailable');
-        if($http_code == 504) throw new HttpException('Gateway Timeout');
-        if($err) throw new HttpException($err);
-
-        return [
-            'http_code' => $http_code,
-            'message'   => $response
-        ];        
+        if($http_code == 500){
+            throw new HttpException('Internal Server Error');
+        }elseif(in_array($http_code, [502, 503, 504])){
+            throw new HttpException('Platform Error. API Service is busy or down.');
+        }else{
+            call_user_func_array($response, [$http_code, $http_response, $http_error]);
+        }
     }
 }

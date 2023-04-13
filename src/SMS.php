@@ -18,10 +18,6 @@ class SMSException extends \Exception{}
 
 class SMS extends GLab{
     
-    const ERROR_NO_ADDRESS_SET = 'Recipient address not set.';
-    const ERROR_MESSAGE_SET = 'No message set.';
-
-
     private $address = []; // Number of the recipient
     private $message = ''; // Message to the recipient
 
@@ -77,8 +73,8 @@ class SMS extends GLab{
      */
     public function send(string $pass_phrase = null){
         
-        if(is_array($this->address) && count($this->address) === 0) throw new SMSException(self::ERROR_NO_ADDRESS_SET);
-        if(!empty($message))  throw new SMSException(self::ERROR_MESSAGE_SET);
+        if(is_array($this->address) && count($this->address) === 0) throw new SMSException('Recipient address not set.');
+        if(!empty($message))  throw new SMSException('Message not set.');
 
         if(!is_null($pass_phrase)){
             $query_str = '?app_id='.$this->APP_ID.'&app_secret='.$this->APP_SECRET.'&passphrase='.$pass_phrase;
@@ -89,7 +85,7 @@ class SMS extends GLab{
         $reporting = [];
         foreach($this->address as $address){
             $clientCorrelator = md5($address);
-            $payload = [
+            $post_fields = [
                 'outboundSMSMessageRequest' => [
                     'clientCorrelator' => $clientCorrelator,
                     'senderAddress' => $this->SHORTCODE,
@@ -99,7 +95,15 @@ class SMS extends GLab{
                     'address' => $address
                 ]
             ];
-            $reporting[$address][$clientCorrelator] = $this->post('/smsmessaging/v1/outbound/'. $this->SHORTCODE.'/requests'.$query_str, $payload);
+            
+            $this->post('/smsmessaging/v1/outbound/'. $this->SHORTCODE.'/requests'.$query_str, $post_fields, function($http_code, $http_response, $http_error) use($reporting){
+                if($http_code == 201){
+                    $reporting[$address][$clientCorrelator] = $http_response;
+                }elseif(in_array($http_code, [400, 401])){
+                    throw new SMSException('Request failed. Wrong or missing parameters, invalid subscriber_number format, wrong access_token.');
+                }
+                
+            });
         }
         return $reporting;
     }

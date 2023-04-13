@@ -20,7 +20,14 @@ class LBS  extends GLab{
      * @param boolean $bypass
      */
     public function locate(string $address, int $accuracy = 100){
-        $access_token = $this->getAccessToken();
-        return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy)
+        try {
+            $access_token = $this->getAccessToken();
+            return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy)
+        } catch(GLab\HttpException $e) {
+            echo 'Http: ' .$e->getMessage();
+        } catch(GLab\TokenException $e) {
+            echo 'Access Token: ' .$e->getMessage();
+        }
+
     }
 }

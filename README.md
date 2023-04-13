@@ -79,6 +79,15 @@ try {
     echo 'Access Token: ' .$e->getMessage();
 }
 ```
+### HTTP Response
+
+| Code          | Description                                                                                          |
+|---------------|------------------------------------------------------------------------------------------------------|
+| `201`         | Request has been   successful                                                                        |
+| `400`   `401` | Request failed. Wrong   or missing parameters, invalid subscriber_number format, wrong access_token. |
+| `502`   `503` | Platform Error. API   Service is busy or down                                                        |
+**Note:** API requests with a response code of `201`, `400` or `401` will be chargeable against your developer wallet. Standard SMS API rates apply, unless otherwise stated.
+
 
 See [https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt](https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt)
 
@@ -93,10 +102,6 @@ Read more about the Subscriber Consent Workflow (http://goo.gl/EEEBO8)
 See [https://www.globelabs.com.ph/docs/#location-based-services](https://www.globelabs.com.ph/docs/#location-based-services)
 
 #### Resource Parameters 
-```
-https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}
-
-```
 | Parameter                            | Description                                                                                                                                                                                                                           | Type     | Usage    |
 |--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
 |        `access_token`                |        Contains security information for transacting with a subscriber.This can be   requested beforehand via the [Subscriber Consent Workflow](http://goo.gl/EEEBO8).              | `STRING` | Required |
@@ -118,6 +123,12 @@ try {
     echo 'Http: ' .$e->getMessage();
 }
 ```
+#### HTTP Response
+| Code          | Description                                    |
+|---------------|------------------------------------------------|
+| `201`         | Request has been   successful                  |
+| `400`   `401` | Request failed. Wrong   or missing parameters. |
+| `502`   `503` | Platform Error. API   Service is busy or down  |
 
 See [https://www.globelabs.com.ph/docs/#location-based-services-lbs-query](https://www.globelabs.com.ph/docs/#location-based-services-lbs-query)
 
@@ -134,6 +145,16 @@ The Load API enables your application to send prepaid load, postpaid credits or 
 Note: The Load API is not readily available upon app creation. To avail, please email your app’s use case and company name to api@globe.com.ph
 
 See [https://www.globelabs.com.ph/docs/#load](https://www.globelabs.com.ph/docs/#load)
+
+#### Request Body or Payload Parameters
+| Parameter           | Description                                                                                                                                                     | Type     | Usage    |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------|
+|        `app_id`     |             This is the unique identifier of your app                                                                                                           | `STRING` | Required |
+|        `app_secret` |             This is the security code of your app                                                                                                               | `STRING` | Required |
+| `rewards_token`     | This is used as a key to allow your app to send rewards                                                                                                         | `STRING` | Required |
+| `address`           | Subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code 09xxxxxxxxx or   9xxxxxxxxx | `STRING` | Required |
+| `promo`             | This is the promo to be sent                                                                                                                                    | `STRING` | Required |
+
 
 ## USSD
 
