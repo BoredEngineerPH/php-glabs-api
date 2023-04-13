@@ -26,7 +26,7 @@ See [](https://www.globelabs.com.ph/docs/#sms)
 
 #### Resource Parameters 
 
-> https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{senderAddress}/requests?access_token={access_token}
+    https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{senderAddress}/requests?access_token={access_token}
 
 
 | Parameter     | Description                                                                                                                                                        | Type   | Usage    |
