@@ -51,6 +51,9 @@ $payload = [
 	]
 ];
 ```
+| Method | URI                                                                                                                                     |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `POST` | `https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}` |
 
 #### Usage `SMS.php`
 ```php
@@ -77,9 +80,6 @@ try {
     echo 'Access Token: ' .$e->getMessage();
 }
 ```
-| Method | URI                                                                                                                                     |
-|--------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `POST` | `https://devapi.globelabs.com.ph/location/v1/queries/location?access_token={access_token}&address={address}&requestedAccuracy={metres}` |
 
 See [https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt](https://www.globelabs.com.ph/docs/#sms-sending-sms-sms-mt)
 
