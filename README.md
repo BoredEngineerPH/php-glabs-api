@@ -5,12 +5,12 @@ Globe labs API library
 ## Available Globe Labs API 
 | API                             | Model           | Release | Status  |
 |---------------------------------|----------------|---------|---------|
-| Short   Messaging Service (SMS) | `SMS.php`      | `1.0.1` | Added   |
-| Location   Based Service (LBS)  | `LBS.php`      | `1.0.1` | Done |
-| Charging                        | `Charging.php` | `1.0.1` | Ongoing |
-| Load                            | `Load.php`     | `1.0.1` | Added   |
-| USSD                            | `USDD.php`     | `1.0.1` | Ongoing |
-| Realtime   Wallet               | `Wallet.php`   | `1.0.1` | Ongoing |
+| [Short Messaging Service (SMS)](#short-messaging-service-sms) | `SMS.php`      | `1.0.1` | Added   |
+| [Location Based Service (LBS)](#location-based-services-lbs)  | `LBS.php`      | `1.0.1` | Done |
+| [Charging](#charging)                        | `Charging.php` | `1.0.1` | Ongoing |
+| [Load](#load)                            | `Load.php`     | `1.0.1` | Added   |
+| [USSD](#ussd)                            | `USDD.php`     | `1.0.1` | Ongoing |
+| [Realtime Wallet](#realtime-wallet)               | `Wallet.php`   | `1.0.1` | Ongoing |
 ## Short Messaging Service (SMS)
 
 Short Message Service (SMS) enables your application or service to send and receive secure, targeted text messages and alerts to your Globe / TM and other telco subscribers.
@@ -221,6 +221,18 @@ See [https://www.globelabs.com.ph/docs/#load](https://www.globelabs.com.ph/docs/
 | `address`           | Subscriber MSISDN (mobile number), including the ‘tel:’ identifier.   Parameter format can include the ‘+’ followed by country code 09xxxxxxxxx or   9xxxxxxxxx | `STRING` | Required |
 | `promo`             | This is the promo to be sent                                                                                                                                    | `STRING` | Required |
 
+### Usage
+```php
+$rewards = 'AbCkxKYid_F_p-JSgTejow';
+$promo = 'Load 1';
+try {
+    $sms = new GLab\Load();
+    $sms->to(['0916xxxxxxx'])
+        ->send($rewards, $promo)
+} catch(GLab\LoadException $e) {
+    echo 'Load: ' .$e->getMessage();
+}
+```
 
 ## USSD
 
