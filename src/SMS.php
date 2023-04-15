@@ -100,9 +100,8 @@ class SMS extends GLab{
                 if($http_code == 201){
                     $reporting[$address][$clientCorrelator] = $http_response;
                 }elseif(in_array($http_code, [400, 401])){
-                    throw new SMSException('Request failed. Wrong or missing parameters, invalid subscriber_number format, wrong access_token.');
-                }
-                
+                    throw new SMSException($http_error);
+                }                
             });
         }
         return $reporting;

@@ -50,7 +50,7 @@ class Load extends GLab{
         $transaction = [];
         
         foreach($this->recipient as $recipient){
-            $response = $this->post('/rewards/v1/transactions/send', [
+            $post_fields = [
                 'outboundRewardRequest' => [
                     'app_id'        => APP_ID,
                     'app_secret'    => APP_SECRET,
@@ -58,8 +58,14 @@ class Load extends GLab{
                     'address'       => $recipient,
                     'promo'         => $promo
                 ]
-            ]);
-            $transaction[$recipient] = $response;
+                ];
+            $response = $this->post('/rewards/v1/transactions/send', $post_fields, function($http_code, $http_response, $http_error){
+                if($http_code == 202){
+                    $transaction[$recipient] = $http_response;
+                }elseif(in_array($http_code, [401, 403, 404, 500])){
+                    throw new SMSException($http_error);
+                }                
+            });            
         }
         return $transaction;
     }

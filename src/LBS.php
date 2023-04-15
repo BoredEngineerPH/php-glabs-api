@@ -21,11 +21,11 @@ class LBS  extends GLab{
      */
     public function locate(string $address, int $accuracy = 100){
         $access_token = $this->getAccessToken();
-        return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy, function($http_code, $http_response, $http_error) use($reporting){
+        return $this->get('/location/v1/queries/location?access_token='.$access_token.'&address='.$address.'&requestedAccuracy='.$accuracy, function($http_code, $http_response, $http_error){
             if($http_code == 201){
                 $reporting[$address][$clientCorrelator] = $http_response;
             }elseif(in_array($http_code, [400, 401])){
-                throw new SMSException('Request failed. Wrong or missing parameters, invalid subscriber_number format, wrong access_token.');
+                throw new SMSException($http_error);
             }            
         })
     }
