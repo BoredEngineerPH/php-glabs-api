@@ -6,11 +6,11 @@ Globe labs API library
 | API                             | Model           | Release | Status  |
 |---------------------------------|----------------|---------|---------|
 | [Short Messaging Service (SMS)](#short-messaging-service-sms) | `SMS.php`      | `1.0.1` | Added   |
-| [Location Based Service (LBS)](#location-based-services-lbs)  | `LBS.php`      | `1.0.1` | Done |
-| [Charging](#charging)                        | `Charging.php` | `1.0.1` | Ongoing |
+| [Location Based Service (LBS)](#location-based-services-lbs)  | `LBS.php`      | `1.0.1` | Added |
+| [Charging](#charging)                        | `Charging.php` | `1.0.1` | Planned |
 | [Load](#load)                            | `Load.php`     | `1.0.1` | Added   |
-| [USSD](#ussd)                            | `USDD.php`     | `1.0.1` | Ongoing |
-| [Realtime Wallet](#realtime-wallet)               | `Wallet.php`   | `1.0.1` | Ongoing |
+| [USSD](#ussd)                            | `USDD.php`     | `1.0.1` | Planned |
+| [Realtime Wallet](#realtime-wallet)               | `Wallet.php`   | `1.0.1` | Planned |
 ## Short Messaging Service (SMS)
 
 Short Message Service (SMS) enables your application or service to send and receive secure, targeted text messages and alerts to your Globe / TM and other telco subscribers.
