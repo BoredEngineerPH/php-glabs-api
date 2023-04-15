@@ -233,7 +233,18 @@ try {
     echo 'Load: ' .$e->getMessage();
 }
 ```
-
+### API Response
+```json
+{
+  "outboundRewardRequest": {
+    "transaction_id": 1805759,
+    "status": "Please check your Rewards Callback URI for status",
+    "address": "9271051129",
+    "promo": "LOAD 50",
+    "timestamp": "Wed, Jun 06 2018 03:19:11 GMT+0000 (UTC)"
+  }
+}
+```
 ## USSD
 
 The USSD API allows users to access your products or services free of charge by accessing the dial menu through a dedicated number.
